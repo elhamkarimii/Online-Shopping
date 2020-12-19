@@ -1,25 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { createGlobalStyle } from "styled-components";
+import FirstSection from "./components/FirstSection";
+import Menu from "./components/Menu";
+import ProductList from "./components/ProductsList";
+import DATA from "./components/data.json"
 
-function App() {
+const GlobalStyle = createGlobalStyle`
+  body{
+    margin: 0;
+    padding: 0; 
+    overflow-x:hidden;
+  }
+   p{
+    margin: 0;
+  }
+    * {
+    box-sizing:border-box;
+  }
+`
+
+export default function App() {
+  const [shoppedItems, setShoppedItems] = useState([]);
+
+  function handleAddTOCard(id) {
+    const itemShopped = DATA.find(item => item.id === id)
+    const copyShoppedItems = [...shoppedItems];
+    const itemFound = { ...shoppedItems.find(item => item.id === id) }
+    const index = shoppedItems.findIndex(item => item.id === id)
+
+    if (shoppedItems.length === 0) {
+      copyShoppedItems.push(itemShopped);
+      setShoppedItems(copyShoppedItems);
+    }
+    else {
+      if (Object.getOwnPropertyNames(itemFound).length > 0) {
+        console.log('repeat')
+        const copyShoppedItems = [...shoppedItems];
+        itemFound.shoppedNumber = itemFound.shoppedNumber + 1;
+        copyShoppedItems[index] = itemFound;
+        setShoppedItems(copyShoppedItems);
+      }
+      else {
+        console.log('aaa')
+        copyShoppedItems.push(itemShopped);
+        setShoppedItems(copyShoppedItems);
+      }
+    }
+  }
+
+  function handleShoppedNumberChange(items) {
+    setShoppedItems(items)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <GlobalStyle />
+      <Menu
+        shoppedItems={shoppedItems}
+        handleChange={handleShoppedNumberChange}
+      />
+      <FirstSection />
+      <ProductList onAddToCard={handleAddTOCard} />
+    </>
+  )
 }
-
-export default App;
